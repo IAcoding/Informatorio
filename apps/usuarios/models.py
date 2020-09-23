@@ -1,25 +1,18 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import User
 
 
-
-class Localidad():
-    nombre = models.CharField(unique=True, blank=False)
-
-    class Meta:
-        ordening = ['nombre']
+class Localidad(models.Model):
+    nombre = models.CharField(unique=True, blank=False, max_length=50)
 
     def __str__(self):
-        return self.nombre
+        return f"self.nombre"
 
 
 
-class Provincia():
-    nombre = models.CharField(unique=True, blank=False)
+class Provincia(models.Model):
     localidades = models.ForeignKey(Localidad, on_delete=models.CASCADE)
-
-    class Meta:
-        ordening = ['nombre']
+    nombre = models.CharField(unique=True, blank=False, max_length=50)
 
     def __str__(self):
         return self.nombre
@@ -27,7 +20,8 @@ class Provincia():
 
 
 #los demas campos los hereda de abstract user ejemplo : nombre apellido etc.
-class Transportista(AbstractUser):
+class Transportista(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     cuit = models.CharField(unique=True, blank=False, max_length=11)
     fecha_nacimiento = models.DateField(blank=False)
     telefono = models.CharField(blank=False, max_length=15)
@@ -38,7 +32,8 @@ class Transportista(AbstractUser):
 
 
 #las empresas o particulares son las que hacen las ofertas de envios de productos.
-class Empresa(AbstractUser):
+class Empresa(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     cuit = models.CharField(unique=True, blank=False, max_length=11)
     telefono = models.CharField(blank=False, max_length=15)
 
@@ -48,7 +43,7 @@ class Empresa(AbstractUser):
 
 
 #observacion es un campo adicional para que la empresa coloque por ejemplo : sucursal Shopping center,
-class Domicilio():
+class Domicilio(models.Model):
     empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE)
     provincia = models.ForeignKey(Provincia, on_delete=models.CASCADE)
     localidad = models.ForeignKey(Localidad, on_delete=models.CASCADE)
